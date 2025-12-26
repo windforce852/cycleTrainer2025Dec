@@ -27,9 +27,11 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
   const totalStartTimeRef = useRef<number | null>(null)
   const intervalRef = useRef<number | null>(null)
   const cyclesRef = useRef<Array<{ cycleNumber: number; duration: number; startTime: number }>>([])
+  const targetDurationRef = useRef<number>(0)
+  const pausedElapsedRef = useRef<number>(0)
 
   useEffect(() => {
-    if (state === 'idle' || isPaused) {
+    if (state === 'idle' || state === 'finished') {
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current)
         intervalRef.current = null
@@ -39,8 +41,9 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
 
     intervalRef.current = window.setInterval(() => {
       if (startTimeRef.current !== null && !isPaused) {
-        const elapsed = (Date.now() - startTimeRef.current) / 1000
-        const remaining = Math.max(0, remainingTime - elapsed)
+        const now = Date.now()
+        const elapsed = pausedElapsedRef.current + (now - startTimeRef.current) / 1000
+        const remaining = Math.max(0, targetDurationRef.current - elapsed)
 
         setRemainingTime(remaining)
 
@@ -55,7 +58,7 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
         clearInterval(intervalRef.current)
       }
     }
-  }, [state, isPaused, remainingTime])
+  }, [state, isPaused])
 
   const handleStateTransition = () => {
     if (isPaused) return
@@ -64,7 +67,9 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
       // Buffer finished, start first cycle
       setState('cycle')
       setCurrentRound(1)
+      targetDurationRef.current = config.cycleDuration
       setRemainingTime(config.cycleDuration)
+      pausedElapsedRef.current = 0
       startTimeRef.current = Date.now()
       setTextColor('text-green-600')
       const cycleStartTime = Date.now()
@@ -82,7 +87,9 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
 
       if (config.restTime > 0) {
         setState('rest')
+        targetDurationRef.current = config.restTime
         setRemainingTime(config.restTime)
+        pausedElapsedRef.current = 0
         setTextColor('text-blue-600')
       } else {
         // No rest time, go directly to next cycle
@@ -92,7 +99,9 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
           nextRound <= config.numberOfCycles
         ) {
           setCurrentRound(nextRound)
+          targetDurationRef.current = config.cycleDuration
           setRemainingTime(config.cycleDuration)
+          pausedElapsedRef.current = 0
           setTextColor('text-green-600')
           cyclesRef.current.push({
             cycleNumber: nextRound,
@@ -114,7 +123,9 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
       ) {
         setState('cycle')
         setCurrentRound(nextRound)
+        targetDurationRef.current = config.cycleDuration
         setRemainingTime(config.cycleDuration)
+        pausedElapsedRef.current = 0
         setTextColor('text-green-600')
         startTimeRef.current = Date.now()
         cyclesRef.current.push({
@@ -130,13 +141,18 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
   }
 
   const startTraining = () => {
+    totalStartTimeRef.current = Date.now()
+    pausedElapsedRef.current = 0
+    
     if (config.bufferTime > 0) {
       setState('buffer')
+      targetDurationRef.current = config.bufferTime
       setRemainingTime(config.bufferTime)
       setTextColor('text-yellow-600')
     } else {
       setState('cycle')
       setCurrentRound(1)
+      targetDurationRef.current = config.cycleDuration
       setRemainingTime(config.cycleDuration)
       setTextColor('text-green-600')
       cyclesRef.current.push({
@@ -145,20 +161,23 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
         startTime: Date.now(),
       })
     }
-    totalStartTimeRef.current = Date.now()
     startTimeRef.current = Date.now()
   }
 
   const pauseTraining = () => {
-    if (state !== 'idle' && state !== 'finished') {
+    if (state !== 'idle' && state !== 'finished' && !isPaused) {
+      if (startTimeRef.current !== null) {
+        pausedElapsedRef.current += (Date.now() - startTimeRef.current) / 1000
+        startTimeRef.current = null
+      }
       setIsPaused(true)
     }
   }
 
   const resumeTraining = () => {
     if (isPaused) {
+      startTimeRef.current = Date.now()
       setIsPaused(false)
-      startTimeRef.current = Date.now() - (config.cycleDuration - remainingTime) * 1000
     }
   }
 
