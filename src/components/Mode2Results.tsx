@@ -131,7 +131,7 @@ export const Mode2Results: React.FC<Mode2ResultsProps> = ({
       </div>
 
       <div className="flex flex-wrap gap-4 justify-center">
-        <Button onClick={onNewTraining}>New Training</Button>
+        <Button onClick={onNewTraining}>Home</Button>
         {onViewSessions && (
           <Button variant="secondary" onClick={onViewSessions}>
             View Sessions

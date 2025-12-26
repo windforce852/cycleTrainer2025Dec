@@ -49,7 +49,8 @@ src/
   - Countdown during buffer time
   - Timer showing current cycle/rest time
   - Current round number
-  - Start, Pause/Resume, Finish buttons
+  - Auto-starts when coming from configuration screen (Start button hidden)
+  - Pause/Resume, Finish buttons (Start button only shown if not auto-started)
   - Text color change notifications (cycle start/end)
 - **Results:**
   - Total rounds completed
@@ -197,7 +198,8 @@ After Finish: Navigate to results
 - [ ] Build Mode1Config component
 - [ ] Add inputs: cycle duration, rest time, number of cycles (or unlimited), buffer time
 - [ ] Add form validation
-- [ ] Add submit handler
+- [ ] Add submit handler that transitions to training screen
+- [ ] "Start Training" button automatically starts training (no manual Start needed)
 - [ ] **Test:** Write unit tests for form validation and submission
 
 #### Step 3.2: Mode 1 Training Logic
@@ -212,7 +214,8 @@ After Finish: Navigate to results
 - [ ] Add buffer countdown display
 - [ ] Add cycle/rest timer display
 - [ ] Add round counter
-- [ ] Add Start, Pause/Resume, Finish buttons
+- [ ] Implement auto-start functionality (via autoStart prop)
+- [ ] Add Start button (hidden when auto-starting), Pause/Resume, Finish buttons
 - [ ] Connect buttons to training logic
 - [ ] **Test:** Write integration tests for button interactions and state changes
 
@@ -372,6 +375,7 @@ After Finish: Navigate to results
 6. Continue to next step only after current step is verified
 
 ## Notes
+- Mode 1: "Start Training" button in configuration automatically starts training; Start button in training screen is hidden when auto-starting
 - Mode 2 has no configuration screen - goes directly to training
 - "End Round" button must be disabled when Stop is pressed in Mode 2
 - All components should be mobile-responsive

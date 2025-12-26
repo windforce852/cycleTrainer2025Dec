@@ -15,7 +15,7 @@ interface Mode2TrainingProps {
 export const Mode2Training: React.FC<Mode2TrainingProps> = ({ onFinish, onCancel }) => {
   const [currentRound, setCurrentRound] = useState(0)
   const [isStopped, setIsStopped] = useState(false)
-  const [textColor, setTextColor] = useState('text-gray-800')
+  const [textColor, setTextColor] = useState('text-black dark:text-white')
   const [cycles, setCycles] = useState<CycleRecord[]>([])
   const cycleStartTimeRef = useRef<number | null>(null)
   const totalStartTimeRef = useRef<number | null>(null)
@@ -63,7 +63,7 @@ export const Mode2Training: React.FC<Mode2TrainingProps> = ({ onFinish, onCancel
     totalStartTimeRef.current = Date.now()
     setCurrentRound(1)
     cycleStartTimeRef.current = Date.now()
-    setTextColor('text-green-600')
+    setTextColor('text-volt dark:text-volt')
     setIsStopped(false)
   }
 
@@ -83,20 +83,20 @@ export const Mode2Training: React.FC<Mode2TrainingProps> = ({ onFinish, onCancel
       setCurrentRound(currentRound + 1)
       cycleStartTimeRef.current = Date.now()
       timer.restart() // Use restart instead of reset + start
-      setTextColor('text-green-600')
+      setTextColor('text-volt dark:text-volt')
     }
   }
 
   const handleStop = () => {
     timer.pause()
     setIsStopped(true)
-    setTextColor('text-red-600')
+    setTextColor('text-red-600 dark:text-red-500')
   }
 
   const handleResume = () => {
     timer.resume()
     setIsStopped(false)
-    setTextColor('text-green-600')
+    setTextColor('text-volt dark:text-volt')
   }
 
   const handleFinish = () => {
@@ -131,75 +131,93 @@ export const Mode2Training: React.FC<Mode2TrainingProps> = ({ onFinish, onCancel
   const buttonStates = getButtonStates()
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2 text-gray-800">Mode 2: Manual Cycles</h2>
-        <p className={`text-lg font-semibold ${textColor} transition-colors duration-300`}>
-          {currentRound === 0 ? 'Ready' : `Round ${currentRound}`}
-        </p>
-      </div>
-
-      <div className="flex justify-center mb-8">
-        <TimerDisplay
-          seconds={Math.ceil(timer.elapsed)}
-          className={textColor}
-          aria-label="Current cycle time"
-        />
-      </div>
-
-      <div className="flex flex-wrap gap-4 justify-center">
-        {buttonStates.showStart && (
-          <>
-            <Button onClick={handleStart}>Start</Button>
-            {onCancel && (
-              <Button variant="secondary" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-          </>
-        )}
-
-        {buttonStates.showEndRound && (
-          <Button
-            onClick={handleEndRound}
-            disabled={buttonStates.endRoundDisabled}
-            aria-label="End current round"
-          >
-            End Round
-          </Button>
-        )}
-
-        {buttonStates.showStop && (
-          <Button onClick={handleStop} variant="secondary" aria-label="Stop training">
-            Stop
-          </Button>
-        )}
-
-        {buttonStates.showResume && (
-          <Button onClick={handleResume} aria-label="Resume training">
-            Resume
-          </Button>
-        )}
-
-        {buttonStates.showFinish && (
-          <Button onClick={handleFinish} variant="secondary" aria-label="Finish training">
-            Finish
-          </Button>
-        )}
-      </div>
-
-      {cycles.length > 0 && (
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm font-semibold text-gray-700 mb-2">Completed Cycles: {cycles.length}</p>
-          <div className="space-y-1 max-h-32 overflow-y-auto">
-            {cycles.map((cycle) => (
-              <div key={cycle.cycleNumber} className="text-sm text-gray-600">
-                Round {cycle.cycleNumber}: {cycle.duration?.toFixed(1)}s
-              </div>
-            ))}
-          </div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-4xl">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4 text-black dark:text-white transition-colors duration-300">
+            Manual Cycles
+          </h1>
+          <p className={`text-2xl md:text-3xl font-black uppercase tracking-wide ${textColor} transition-colors duration-300`}>
+            {currentRound === 0 ? 'Ready to Start' : `Round ${currentRound}`}
+          </p>
         </div>
-      )}
+
+        {/* Timer Display */}
+        <div className="flex justify-center mb-16">
+          <TimerDisplay
+            seconds={Math.ceil(timer.elapsed)}
+            className={textColor}
+            aria-label="Current cycle time"
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 justify-center mb-12">
+          {buttonStates.showStart && (
+            <>
+              <Button onClick={handleStart}>Start</Button>
+              {onCancel && (
+                <Button variant="secondary" onClick={onCancel}>
+                  Cancel
+                </Button>
+              )}
+            </>
+          )}
+
+          {buttonStates.showEndRound && (
+            <Button
+              onClick={handleEndRound}
+              disabled={buttonStates.endRoundDisabled}
+              aria-label="End current round"
+            >
+              End Round
+            </Button>
+          )}
+
+          {buttonStates.showStop && (
+            <Button onClick={handleStop} variant="secondary" aria-label="Stop training">
+              Stop
+            </Button>
+          )}
+
+          {buttonStates.showResume && (
+            <Button onClick={handleResume} aria-label="Resume training">
+              Resume
+            </Button>
+          )}
+
+          {buttonStates.showFinish && (
+            <Button onClick={handleFinish} variant="secondary" aria-label="Finish training">
+              Finish
+            </Button>
+          )}
+        </div>
+
+        {/* Completed Cycles List */}
+        {cycles.length > 0 && (
+          <div className="mt-16 border-t border-black/10 dark:border-white/10 pt-8 transition-colors duration-300">
+            <h2 className="text-xl font-black uppercase tracking-wide mb-6 text-black dark:text-white transition-colors duration-300">
+              Laps — {cycles.length}
+            </h2>
+            <div className="space-y-0 max-h-96 overflow-y-auto">
+              {cycles.map((cycle) => (
+                <div
+                  key={cycle.cycleNumber}
+                  className="flex justify-between items-center py-4 border-b border-black/10 dark:border-white/10 last:border-b-0 transition-colors duration-300"
+                >
+                  <span className="text-lg font-black uppercase text-black dark:text-white transition-colors duration-300">
+                    Lap {cycle.cycleNumber}
+                  </span>
+                  <span className="text-2xl font-black tabular-nums text-black dark:text-white transition-colors duration-300">
+                    {cycle.duration?.toFixed(1)}s
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

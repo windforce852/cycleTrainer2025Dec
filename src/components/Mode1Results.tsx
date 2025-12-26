@@ -50,7 +50,7 @@ export const Mode1Results: React.FC<Mode1ResultsProps> = ({
       </div>
 
       <div className="flex flex-wrap gap-4 justify-center">
-        <Button onClick={onNewTraining}>New Training</Button>
+        <Button onClick={onNewTraining}>Home</Button>
         {onViewSessions && (
           <Button variant="secondary" onClick={onViewSessions}>
             View Sessions

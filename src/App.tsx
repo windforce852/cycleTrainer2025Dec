@@ -6,6 +6,7 @@ import { Mode1Results } from './components/Mode1Results'
 import { Mode2Training } from './components/Mode2Training'
 import { Mode2Results } from './components/Mode2Results'
 import { SessionList } from './components/SessionList'
+import { DarkModeToggle } from './components/DarkModeToggle'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { exportToJSON, exportToCSV } from './utils/exportData'
 import type {
@@ -111,7 +112,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
+      <DarkModeToggle />
+      
       {currentView === 'mode-selector' && (
         <ModeSelector
           onSelectMode1={() => setCurrentView('mode1-config')}
@@ -132,6 +135,7 @@ function App() {
           config={mode1Config}
           onFinish={handleMode1Finish}
           onCancel={() => setCurrentView('mode-selector')}
+          autoStart={true}
         />
       )}
 

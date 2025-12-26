@@ -11,12 +11,14 @@ interface Mode1TrainingProps {
     cycles: Array<{ cycleNumber: number; duration: number }>
   }) => void
   onCancel?: () => void
+  autoStart?: boolean
 }
 
 export const Mode1Training: React.FC<Mode1TrainingProps> = ({
   config,
   onFinish,
   onCancel,
+  autoStart = false,
 }) => {
   const [state, setState] = useState<Mode1TrainingState>('idle')
   const [currentRound, setCurrentRound] = useState(0)
@@ -29,6 +31,15 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
   const cyclesRef = useRef<Array<{ cycleNumber: number; duration: number; startTime: number }>>([])
   const targetDurationRef = useRef<number>(0)
   const pausedElapsedRef = useRef<number>(0)
+  const hasAutoStartedRef = useRef<boolean>(false)
+
+  // Auto-start training when component mounts if autoStart is true
+  useEffect(() => {
+    if (autoStart && state === 'idle' && !hasAutoStartedRef.current) {
+      hasAutoStartedRef.current = true
+      startTraining()
+    }
+  }, [autoStart, state])
 
   useEffect(() => {
     if (state === 'idle' || state === 'finished') {
@@ -239,7 +250,7 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
       </div>
 
       <div className="flex flex-wrap gap-4 justify-center">
-        {state === 'idle' && (
+        {state === 'idle' && !autoStart && (
           <>
             <Button onClick={startTraining}>Start</Button>
             {onCancel && (

@@ -19,7 +19,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
 
   return (
     <div
-      className={`text-6xl font-mono font-bold ${className}`}
+      className={`text-[120px] md:text-[160px] font-black tabular-nums leading-none tracking-tighter ${className}`}
       aria-label={ariaLabel}
       role="timer"
       aria-live="polite"
