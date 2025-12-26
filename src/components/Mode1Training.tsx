@@ -211,6 +211,13 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
     return 'Ready'
   }
 
+  const getRoundDisplay = (): string => {
+    if (config.numberOfCycles === 'unlimited') {
+      return `Round ${currentRound}`
+    }
+    return `Round ${currentRound}/${config.numberOfCycles}`
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <div className="text-center mb-8">
@@ -219,7 +226,7 @@ export const Mode1Training: React.FC<Mode1TrainingProps> = ({
           {getStateLabel()}
         </p>
         {state !== 'idle' && state !== 'finished' && (
-          <p className="text-gray-600 mt-2">Round {currentRound}</p>
+          <p className="text-gray-600 mt-2">{getRoundDisplay()}</p>
         )}
       </div>
 
